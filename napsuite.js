@@ -3,6 +3,7 @@
  * find one, this.
  *
  * wishlist: colors, formatting options for error output.
+ * @todo: refactor to make a runner context
  *
  */
 
@@ -19,6 +20,9 @@ Assertions.prototype = {
   },
   _F : function() {
     sys.print('F');
+  },
+  _E : function() {
+    sys.print('E');
   },
   _okNotify : function() {
     this.counts.numOk ++;
@@ -51,7 +55,7 @@ NapSuite.prototype = {
     this._beforeRun();
     var i;
     for (i in this) {
-      if (!i.match(/^test\b./)) continue;
+      if (!i.match(/^test[ A-Z0-9]/)) continue;
       this._runWithCatch(i);
       this.numTests += 1;
     }
@@ -61,6 +65,10 @@ NapSuite.prototype = {
     try {
       this[i].apply(this);
     } catch( e ) {
+      if (e.name != 'AssertionError') {
+        this.assert._E();
+        this.numErrors ++;
+      }
       this.exceptions.push([i, e]);
     }
   },
@@ -72,8 +80,10 @@ NapSuite.prototype = {
     this.numAssertions = 0;
     this.numTests = 0;
     this.numFails = 0;
+    this.numErrors = 0;
     this.exceptions = [];
-    // this._fullstack oneday maybe a commandline option
+    // this._fullstackOnAssertFails oneday maybe a commandline option
+    this._fullstackOnExceptions = true;
     this._startClock();
   },
   _afterRun : function() {
@@ -104,20 +114,38 @@ NapSuite.prototype = {
     sys.puts("\nFinished in "+(this.elapsedMs * 1000)+" seconds.");
   },
   _announceSummary : function() {
-    sys.puts(this.numTests+" tests, "+this.numAssertions+' assertions');
+    sys.puts(this.numTests+" tests, "+this.numAssertions+' assertions, '+
+      this.numFails+' failures, '+this.numErrors+' errors'
+    );
   },
   _displayExceptions : function() {
     for (var i = 0; i < this.exceptions.length; i ++) {
       var arr = this.exceptions[i];
-      var meth = arr[0], e = arr[1];
-      var msg = '' + this.suiteName + "." + meth + ' assertion failed: ';
-      msg += (e.message ? ('"'+e.message+'"') : e.toString());
-      sys.puts("\n"+msg);
-      if (this._fullstack) {
-        sys.puts(e.stack);
+      if ('AssertionError' == arr[1].name) {
+        this._onAssertionError.apply(this, arr);
       } else {
-        sys.puts(this._sillyStackSlice(e.stack));
+        this._onException.apply(this, arr);
       }
+    }
+  },
+  _onAssertionError : function(meth, e) {
+    var msg = '' + this.suiteName + "." + meth + ' assertion failed: ';
+    msg += (e.message ? ('"'+e.message+'"') : e.toString());
+    sys.puts("\n"+msg);
+    if (this._fullstackOnAssertFails) {
+      sys.puts(e.stack);
+    } else {
+      sys.puts(this._sillyStackSlice(e.stack));
+    }
+  },
+  _onException : function(meth, e) {
+    var msg = '' + this.suiteName + "." + meth + ' threw exception: ' +
+      e.toString();
+    sys.puts("\n"+msg);
+    if (this._fullstackOnExceptions) {
+      sys.puts(e.stack);
+    } else {
+      sys.puts(this._sillyStackSlice(e.stack));
     }
   },
   _sillyStackSlice : function(st) {
