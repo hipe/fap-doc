@@ -2,8 +2,11 @@
  * This is a standin for a testing f/w that 'feels' right. till we
  * find one, this.
  *
- * wishlist: colors, formatting options for error output.
- * @todo: refactor to make a runner context
+ * objectives: individual test cases can be wrapped in functions.
+ * test cases can be grouped into test suites (test units?)
+ *
+ * individual assertion failures should not stop the whole test
+ * suite from completing.
  *
  */
 
@@ -50,68 +53,75 @@ var NapSuite = function(name) {
   this.suiteName = name;
 };
 
-NapSuite.prototype = {
-  run : function() {
-    this._beforeRun();
-    var i;
-    for (i in this) {
-      if (!i.match(/^test[ A-Z0-9]/)) continue;
-      this._runWithCatch(i);
-      this.numTests += 1;
-    }
-    this._afterRun();
+var NapSuitesRunner = function(){
+  this.suites = [];
+};
+NapSuitesRunner.prototype = {
+  addSuite : function(suite) {
+    this.suites.push(suite);
+    return this;
   },
-  _runWithCatch : function(i) {
+  run : function() {
+    this._beforeRunAll();
+    for (var i = 0, j; i < this.suites.length; i++) {
+      this.suite = this.suites[i];
+      this._beforeRunSuite();
+      for (j in this.suite) {
+        if (!j.match(/^test[ A-Z0-9]/)) continue;
+        this._runWithCatch(j);
+        this.numTests += 1;
+      }
+      this._afterRunSuite();
+    }
+    this._afterRunAll();
+  },
+  _runWithCatch : function(fname) {
     try {
-      this[i].apply(this);
+      this.suite[fname].apply(this.suite);
     } catch( e ) {
       if (e.name != 'AssertionError') {
-        this.assert._E();
+        this.suite.assert._E(); // @fixme
         this.numErrors ++;
       }
-      this.exceptions.push([i, e]);
+      this.exceptions.push([this.suite, fname, e]);
     }
   },
-  _beforeRun : function() {
-    this.assert = new Assertions(this);
-    this._announceSuite && this._announceSuite();
-    this._announceStarted && this._announceStarted();
+  _beforeRunAll : function() {
     this.numOk = 0;
-    this.numAssertions = 0;
     this.numTests = 0;
     this.numFails = 0;
     this.numErrors = 0;
+    this.numAssertions = 0;
     this.exceptions = [];
-    // this._fullstackOnAssertFails oneday maybe a commandline option
-    this._fullstackOnExceptions = true;
+    this._fullStackOnAssertFails = false; // one day.. command line opts
+    this._fullStackOnExceptions = true;
     this._startClock();
   },
-  _afterRun : function() {
-    this._stopClock();
-    this._announceSummary && this._announceSummary();
-    if (this.exceptions.length > 0) this._displayExceptions();
-  },
-  test : function(name, f) {
-    this["test "+name] = f;
-  },
-  ok : function() {
-    this.assert.ok.apply(this.assert, arguments);
-  },
-  equal : function() {
-    this.assert.equal.apply(this.assert. arguments);
+  _beforeRunSuite : function() {
+    this.suite.assert = new Assertions(this.suite);
+    this._announceSuite && this._announceSuite();
+    this._announceStarted && this._announceStarted();
   },
   _announceSuite : function() {
-    sys.puts("Loaded suite "+this.suiteName);
+    sys.puts("Loaded suite "+this.suite.suiteName);
   },
   _announceStarted : function() {
     sys.puts("Started");
+  },
+  _afterRunSuite : function() {
+    this.suite = null; // for now, sure why not
+  },
+  _afterRunAll : function() {
+    this._stopClock();
+    this._announceSummary && this._announceSummary();
+    if (this.exceptions.length > 0) this._displayExceptions();
   },
   _startClock : function() {
     this.t1 = new Date();
   },
   _stopClock : function() {
     this.elapsedMs = (new Date()).getTime() - this.t1.getTime();
-    sys.puts("\nFinished in "+(this.elapsedMs * 1000)+" seconds.");
+    sys.puts("\nFinished in "+(1000.0 * this.elapsedMs)+" seconds.");
   },
   _announceSummary : function() {
     sys.puts(this.numTests+" tests, "+this.numAssertions+' assertions, '+
@@ -121,28 +131,28 @@ NapSuite.prototype = {
   _displayExceptions : function() {
     for (var i = 0; i < this.exceptions.length; i ++) {
       var arr = this.exceptions[i];
-      if ('AssertionError' == arr[1].name) {
+      if ('AssertionError' == arr[2].name) {
         this._onAssertionError.apply(this, arr);
       } else {
         this._onException.apply(this, arr);
       }
     }
   },
-  _onAssertionError : function(meth, e) {
-    var msg = '' + this.suiteName + "." + meth + ' assertion failed: ';
+  _onAssertionError : function(suite, meth, e) {
+    var msg = '' + suite.suiteName + "." + meth + ' assertion failed: ';
     msg += (e.message ? ('"'+e.message+'"') : e.toString());
     sys.puts("\n"+msg);
-    if (this._fullstackOnAssertFails) {
+    if (this._fullStackOnAssertFails) {
       sys.puts(e.stack);
     } else {
       sys.puts(this._sillyStackSlice(e.stack));
     }
   },
-  _onException : function(meth, e) {
-    var msg = '' + this.suiteName + "." + meth + ' threw exception: ' +
+  _onException : function(suite, meth, e) {
+    var msg = '' + suite.suiteName + "." + meth + ' threw exception: ' +
       e.toString();
     sys.puts("\n"+msg);
-    if (this._fullstackOnExceptions) {
+    if (this._fullStackOnExceptions) {
       sys.puts(e.stack);
     } else {
       sys.puts(this._sillyStackSlice(e.stack));
@@ -150,6 +160,20 @@ NapSuite.prototype = {
   },
   _sillyStackSlice : function(st) {
     return st.split("\n").slice(2,3).join("\n");
+  }
+};
+NapSuite.prototype = {
+  run : function() {
+    var run = (new NapSuitesRunner()).addSuite(this);
+    run.run();
+  },
+  /**
+  * experimental safer uglier higher level test case adder.
+  * you either should use this or should not use this.  This
+  * is guaranteed to be future proof, i think.
+  */
+  test : function(name, f) {
+    this["test "+name] = f;
   }
 };
 
