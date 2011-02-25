@@ -14,6 +14,9 @@ NapSuite.prototype = {
       if (!i.match(/^test\b/)) continue;
       this[i].apply(this);
     }
+  },
+  test : function(name, f) {
+    this["test "+name] = f;
   }
 };
 
