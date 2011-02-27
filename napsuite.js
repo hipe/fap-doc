@@ -11,7 +11,8 @@
  */
 
 var assert = require('assert'),
-       sys = require('sys');
+       sys = require('sys'),
+       optparse = require('../lib/fuckparse');
 
 var Assertions = function(suite) {
   this.counts = suite;
@@ -62,7 +63,7 @@ NapSuitesRunner.prototype = {
     return this;
   },
   run : function() {
-    this._beforeRunAll();
+    if (!this._beforeRunAll()) return; // should have printed errors
     for (var i = 0, j; i < this.suites.length; i++) {
       this.suite = this.suites[i];
       this._beforeRunSuite();
@@ -74,6 +75,9 @@ NapSuitesRunner.prototype = {
       this._afterRunSuite();
     }
     this._afterRunAll();
+  },
+  _makeMatcher : function(which, arg) {
+    sys.puts('(not yet implemented: '+which+': "'+arg+'")');
   },
   _runWithCatch : function(fname) {
     try {
@@ -95,7 +99,9 @@ NapSuitesRunner.prototype = {
     this.exceptions = [];
     this._fullStackOnAssertFails = false; // one day.. command line opts
     this._fullStackOnExceptions = true;
+    if (!this._parseCommandLineOptions()) return false;
     this._startClock();
+    return true;
   },
   _beforeRunSuite : function() {
     this.suite.assert = new Assertions(this.suite);
@@ -160,6 +166,22 @@ NapSuitesRunner.prototype = {
   },
   _sillyStackSlice : function(st) {
     return st.split("\n").slice(2,3).join("\n");
+  },
+  _parseCommandLineOptions : function() {
+    // @todo loosen this up one day when we figure out what we are doing
+    var parser = optparse.build(function(o){
+      o.on('-n NAME', '--name=NAME', 'Runs tests matching NAME.',
+                                     '(patterns may be used)');
+      o.on('-t TC', '--testcase=TESTCASE',
+                              'Runs tests in TestCases matching TESTCASE.',
+                              '(patterns may be used)');
+    });
+    var req = parser.parse(process.argv);
+    if (undefined == req) return true; // no options were passed, keep going
+    if (false == req) return false; // final output was put, exit
+    if (req.values.name) this._makeMatcher('test', req.values.name);
+    if (req.values.testcase) this._makeMatcher('case', req.values.testcase);
+    return true; // we prepared the things, now please run the tests.
   }
 };
 NapSuite.prototype = {
