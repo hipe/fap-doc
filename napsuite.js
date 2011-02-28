@@ -84,8 +84,9 @@ NapCasesRunner.prototype = {
         && !this._match('case', this.testcase.getCaseName())) continue;
       this._beforeRunCase(this.testcase);
       for (j in this.testcase) {
-        if (!j.match(/^test[ A-Z0-9]/)) continue;
-        if (this._matchers.test && ! this._match('test', j)) continue;
+        var md = j.match(/^test(?=[ _A-Z0-9])[ _]?(.+)$/);
+        if (!md) continue;
+        if (this._matchers.test && ! this._match('test', md[1])) continue;
         this._runWithCatch(j);
         this.num.tests ++;
       }
