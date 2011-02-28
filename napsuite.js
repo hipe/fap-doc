@@ -64,6 +64,8 @@ Assertions.prototype = {
 var NapCasesRunner = function(){
   this._fullStackOnAssertFails = false; // one day.. command line opts
   this._fullStackOnExceptions = true;
+  this._noticeOnEmptyMatch = true;
+  this._matchers = {};
   this.cases = [];
 };
 NapCasesRunner.prototype = {
@@ -78,9 +80,12 @@ NapCasesRunner.prototype = {
     if (!this._beforeRunAll()) return; // should have printed errors
     for (var i = 0, j; i < this.cases.length; i++) {
       this.testcase = this.cases[i];
+      if (this._matchers['case']
+        && !this._match('case', this.testcase.getCaseName())) continue;
       this._beforeRunCase(this.testcase);
       for (j in this.testcase) {
         if (!j.match(/^test[ A-Z0-9]/)) continue;
+        if (this._matchers.test && ! this._match('test', j)) continue;
         this._runWithCatch(j);
         this.num.tests ++;
       }
@@ -88,8 +93,58 @@ NapCasesRunner.prototype = {
     }
     this._afterRunAll();
   },
-  _makeMatcher : function(which, arg) {
-    sys.puts('(not yet implemented: '+which+': "'+arg+'")');
+  _match : function(w, str) {
+    var i;
+    if (this._matchers[w].regexps) {
+      for (i=this._matchers[w].regexps.length; i--;) {
+        if (this._matchers[w].regexps[i].test(str)) return true;
+      }
+    }
+    if (this._matchers[w].literals) {
+      for (i=this._matchers[w].literals.length; i--;) {
+        if (this._matchers[w].literals[i] == str) return true;
+      }
+    }
+    return false;
+  },
+  puts : sys.puts,
+  _makeMatchers : function(w, args) { // w is 'test' or 'case'
+    if (!this._matchers[w]) this._matchers[w] = {};
+    var md, i, arg;
+    for (i=0; i<args.length; i++) {
+      arg = args[i];
+      if ((md = (/^\/(.+)\/([a-z]*)$/).exec(arg))) {
+        if (md[2].length && 'i' != md[2]) {
+          this.puts(
+          "Can't make matcher with \""+md[0]+
+          "\": invalid flag(s) \""+md[2]+"\".");
+          this.puts("(The only regexp flag "+
+          "that makes sense to in this context is 'i'.)");
+          return false;
+        }
+        if (!this._matchers[w].regexps) this._matchers[w].regexps = [];
+        this._matchers[w].regexps.push(new RegExp(md[1], md[2]));
+      } else {
+        if (!this._matchers[w].literals) this._matchers[w].literals = [];
+        this._matchers[w].literals.push(arg);
+      }
+    }
+    return true;
+  },
+  _inspectMatchers : function() {
+    var toks = [];
+    if (this._matchers['case'])
+      toks.push('cases matching '+this._inspectMatcher('case'));
+    if (this._matchers['test'])
+      toks.push('tests matching '+this._inspectMatcher('test'));
+    return toks.join(' with ');
+  },
+  _inspectMatcher : function(w) {
+    var r = this._matchers[w].regexps, l = this._matchers[w].literals, a = [];
+    debugger;
+    (r && a.push(optparse.oxfordComma(r, ' or ')));
+    (l && a.push(optparse.oxfordComma(l,' or ', optparse.oxfordComma.quote)));
+    return a.join(' or ');
   },
   _runWithCatch : function(fname) {
     try {
@@ -117,11 +172,11 @@ NapCasesRunner.prototype = {
     this._announceStarted && this._announceStarted();
   },
   _announceCase : function() {
-    sys.puts("Loaded case "+this.testcase.caseName);
+    this.puts("Loaded case "+this.testcase.caseName);
     // @todo: in ruby test-unit this says "loaded suite". what does it mean?
   },
   _announceStarted : function() {
-    sys.puts("Started");
+    this.puts("Started");
   },
   _afterRunCase : function() {
     this.testcase = null; // for now, sure why not
@@ -136,12 +191,15 @@ NapCasesRunner.prototype = {
   },
   _stopClock : function() {
     this.elapsedMs = (new Date()).getTime() - this.t1.getTime();
-    sys.puts("\nFinished in "+(1000.0 * this.elapsedMs)+" seconds.");
+    this.puts("\nFinished in "+(1000.0 * this.elapsedMs)+" seconds.");
   },
   _announceSummary : function() {
-    sys.puts(this.num.tests+" tests, "+this.num.asserts+' assertions, '+
+    this.puts(this.num.tests+" tests, "+this.num.asserts+' assertions, '+
       this.num.fails+' failures, '+this.num.unexpectedExceptions+' errors'
     );
+    if (0==this.num.tests && (this._matchers['case']||this._matchers.test) &&
+      this._noticeOnEmptyMatch) this.puts(
+        "(notice: found no "+this._inspectMatchers()+'.)');
   },
   _displayExceptions : function() {
     for (var i = 0; i < this.exceptionRecords.length; i ++) {
@@ -154,23 +212,23 @@ NapCasesRunner.prototype = {
     }
   },
   _onAssertionError : function(testcase, meth, e) {
-    var msg = '' + testcase.suiteName + "." + meth + ' assertion failed: ';
+    var msg = testcase.getCaseName() + "." + meth + ' assertion failed: ';
     msg += (e.message ? ('"'+e.message+'"') : e.toString());
-    sys.puts("\n"+msg);
+    this.puts("\n"+msg);
     if (this._fullStackOnAssertFails) {
-      sys.puts(e.stack);
+      this.puts(e.stack);
     } else {
-      sys.puts(this._sillyStackSlice(e.stack));
+      this.puts(this._sillyStackSlice(e.stack));
     }
   },
   _onException : function(testcase, meth, e) {
     var msg = '' + testcase.caseName + "." + meth + ' threw exception: ' +
       e.toString();
-    sys.puts("\n"+msg);
+    this.puts("\n"+msg);
     if (this._fullStackOnExceptions) {
-      sys.puts(e.stack);
+      this.puts(e.stack);
     } else {
-      sys.puts(this._sillyStackSlice(e.stack));
+      this.puts(this._sillyStackSlice(e.stack));
     }
   },
   _sillyStackSlice : function(st) {
@@ -180,16 +238,18 @@ NapCasesRunner.prototype = {
     // @todo loosen this up one day when we figure out what we are doing
     var parser = optparse.build(function(o){
       o.on('-n NAME', '--name=NAME', 'Runs tests matching NAME.',
-                                     '(patterns may be used)');
+                                     '(/Patterns/ may be used.)', {list:1});
       o.on('-t TC', '--testcase=TESTCASE',
                               'Runs tests in TestCases matching TESTCASE.',
-                              '(patterns may be used)');
+                              '(/Patterns/ may be used.)', {list:1});
     });
     var req = parser.parse(process.argv);
     if (undefined == req) return true; // no options were passed, keep going
     if (false == req) return false; // final output was put, exit
-    if (req.values.name) this._makeMatcher('test', req.values.name);
-    if (req.values.testcase) this._makeMatcher('case', req.values.testcase);
+    if (req.values.name &&
+      !this._makeMatchers('test', req.values.name)) return false;
+    if (req.values.testcase &&
+      !this._makeMatchers('case', req.values.testcase)) return false;
     return true; // we prepared the things, now please run the tests.
   }
 };
