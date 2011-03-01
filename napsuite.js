@@ -15,6 +15,8 @@
  * of command-line options.
  *
  * wishlist: more than one testfile!, randomizer, coverage testing.
+ *   @todo: decide if we should crap out of a test on assert failure.
+ *   @todo: rename to naptest!? napunit!?
  *
  */
 
@@ -69,6 +71,8 @@ var NapCasesRunner = function(){
   this.cases = [];
 };
 NapCasesRunner.prototype = {
+  color : optparse.Color.methods.color,
+  notice : function(str) { return this.color(str, 'yellow'); },
   toString : function() {
     return 'NapCasesRunner ' + this.cases.size + ' cases.';
   },
@@ -78,21 +82,31 @@ NapCasesRunner.prototype = {
   },
   run : function() {
     if (!this._beforeRunAll()) return; // should have printed errors
-    for (var i = 0, j; i < this.cases.length; i++) {
-      this.testcase = this.cases[i];
-      if (this._matchers['case']
-        && !this._match('case', this.testcase.getCaseName())) continue;
-      this._beforeRunCase(this.testcase);
-      for (j in this.testcase) {
-        var md = j.match(/^test(?=[ _A-Z0-9])[ _]?(.+)$/);
+    for (var i = 0; i < this.cases.length; i++)
+      this._runCase(this.cases[i]);
+    this._afterRunAll();
+  },
+  _runCase : function(caze, asChild) {
+    var i;
+    this.testcase = caze;
+    if (!this._matchers['case'] ||
+      this._match('case', this.testcase.getCaseName())
+    ) {
+      this._beforeRunCase(asChild);
+      for (i in this.testcase) {
+        var md = i.match(/^test(?=[ _A-Z0-9])[ _]?(.+)$/);
         if (!md) continue;
         if (this._matchers.test && ! this._match('test', md[1])) continue;
-        this._runWithCatch(j);
+        this._runTestWithCatch(i);
         this.num.tests ++;
       }
       this._afterRunCase();
     }
-    this._afterRunAll();
+    if (caze._children) {
+      for (i = 0; i < caze._children.length; i++) {
+        this._runCase(caze._children[i], true);
+      }
+    }
   },
   _match : function(w, str) {
     var i;
@@ -142,18 +156,17 @@ NapCasesRunner.prototype = {
   },
   _inspectMatcher : function(w) {
     var r = this._matchers[w].regexps, l = this._matchers[w].literals, a = [];
-    debugger;
     (r && a.push(optparse.oxfordComma(r, ' or ')));
     (l && a.push(optparse.oxfordComma(l,' or ', optparse.oxfordComma.quote)));
     return a.join(' or ');
   },
-  _runWithCatch : function(fname) {
+  _runTestWithCatch : function(fname) {
     try {
       this.testcase[fname].apply(this.testcase);
     } catch( e ) {
       if (e.name != 'AssertionError') {
         this.testcase.assert._E(); // @fixme
-        this.num.unexpectedException ++;
+        this.num.unexpectedExceptions ++;
       }
       this.exceptionRecords.push([this.testcase, fname, e]);
     }
@@ -167,20 +180,23 @@ NapCasesRunner.prototype = {
     this._startClock();
     return true;
   },
-  _beforeRunCase : function(testcase) {
-    this.testcase.assert = new Assertions(this.num, testcase.getCaseName());
-    this._announceCase && this._announceCase();
-    this._announceStarted && this._announceStarted();
+  _beforeRunCase : function(asChild) {
+    this.testcase.assert = new Assertions(this.num,
+      this.testcase.getCaseName());
+    if (!asChild) {
+      this._announceCase && this._announceCase();
+      this._announceStarted && this._announceStarted();
+    }
   },
   _announceCase : function() {
-    this.puts("Loaded case "+this.testcase.caseName);
+    this.puts("Loaded case "+(this.testcase.getCaseName() || '[no name]'));
     // @todo: in ruby test-unit this says "loaded suite". what does it mean?
   },
   _announceStarted : function() {
     this.puts("Started");
   },
   _afterRunCase : function() {
-    this.testcase = null; // for now, sure why not
+    this.testcase = null;
   },
   _afterRunAll : function() {
     this._stopClock();
@@ -200,7 +216,7 @@ NapCasesRunner.prototype = {
     );
     if (0==this.num.tests && (this._matchers['case']||this._matchers.test) &&
       this._noticeOnEmptyMatch) this.puts(
-        "(notice: found no "+this._inspectMatchers()+'.)');
+        "("+this.notice('notice:')+" found no "+this._inspectMatchers()+'.)');
   },
   _displayExceptions : function() {
     for (var i = 0; i < this.exceptionRecords.length; i ++) {
@@ -258,12 +274,37 @@ NapCasesRunner.prototype = {
 var NapCase = function(name) {
   this.caseName = name;
 };
+NapCase.globalRunEnabled = true;
 NapCase.prototype = {
-  getCaseName : function() { return this.caseName; },
-  toString : function() { return 'NapCase: '+this.caseName; },
+  _isNapCase : true,
+  toString : function() {
+    var s = 'NapCase: ' + (this.caseName || '[no name]');
+    if (this._children) s += ', ' + (this._children.length) + ' children';
+    return s;
+  },
+  getCaseName : function() {
+    return this.caseName;
+  },
   run : function() {
-    var run = (new NapCasesRunner()).addCase(this);
-    run.run();
+    if (NapCase.globalRunEnabled) {
+      var run = (new NapCasesRunner()).addCase(this);
+      run.run();
+    }
+  },
+  childCase : function(strOrObj) {
+    if ('string' == typeof(strOrObj)) {
+      testcase = new NapCase(strOrObj);
+      arguments[1] && arguments[1](testcase);
+    } else if ('object' == typeof(strOrObj)) {
+      testcase = strOrObj;
+      if (arguments.size > 1)
+        throw new TypeError("when passing object, cannot pass second arg.");
+    } else {
+      throw new TypeError("bad type for first arg: "+typeof(strOrObj));
+    }
+    if (!this._children) this._children = [];
+    this._children.push(testcase);
+    return testcase;
   },
   /**
   * experimental safer uglier higher level test case adder.
@@ -272,9 +313,25 @@ NapCase.prototype = {
   */
   test : function(name, f) {
     this["test "+name] = f;
+  },
+  globalRunEnable : function() {
+    NapCase.globalRunEnabled = true;
+    return this;
+  },
+  globalRunDisable : function() {
+    NapCase.globalRunEnabled = false;
+    return this;
   }
 };
 
-exports.testCase = function(name) {
-  return new NapCase(name);
+exports.testCase = function() {
+  var i, caze;
+  if (arguments.length >= 2) {
+    caze = arguments[0];
+    caze.caseName = arguments[1];
+    for (i in NapCase.prototype) { caze[i] = NapCase.prototype[i]; }
+  } else {
+    caze = new NapCase(arguments[0]);
+  }
+  return caze;
 };
