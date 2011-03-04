@@ -26,13 +26,13 @@ exports.run = function(view, context){
         return x;
     });
 
-    // for each article emit the article template
-    context.data.forEach(function(article){
-        var html = context.templates['article.jsont'].expand({
-            article: article,
+    // for each doc-page emit the doc-page template
+    context.data.forEach(function(page){
+        var html = context.templates['doc-page.jsont'].expand({
+            docPage: page,
             partials: context.partials
         });
-        view.emit(article.url, html);
+        view.emit(page.url, html);
     });
 
     view.done();
