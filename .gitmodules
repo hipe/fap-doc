@@ -1,0 +1,3 @@
+[submodule "vendor/interface-reflector"]
+	path = vendor/interface-reflector
+	url = git://github.com/hipe/interface-reflector.git
