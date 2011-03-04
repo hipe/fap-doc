@@ -5,15 +5,21 @@ require File.dirname(__FILE__)+'/vendor/interface-reflector/rake-like'
 task :"petrify" do |o|
   o.task_class GitTask
   o.desc 'put {src} in {dest_dirname_basename}/'
-  o.src 'git://github.com/caolan/petrify.git'
-  o.dest "#{File.dirname(__FILE__)}/vendor/petrify"
+  o.src 'git://github.com/hipe/petrify.git'
+  o.set :old_src, 'git://github.com/caolan/petrify.git'
+  o.dest "#{File.dirname(__FILE__)}/vendor/petrify-hipe"
+  o.note "be mindful of the branches!",
+    "i branched this once upon a time to patch a thing.",
+    "you should look and see what's going on there now (at {old_src})."
 end
 
 module FapUnit
   class GitTask < Hipe::InterfaceReflector::TaskDefinition
-    attr_akksessor :src, :dest
+    attr_akksessor :src, :dest, :note
     def execute
       @c.err.puts %x{git clone #{src} #{dest}}
+      note and @c.err.puts(color("note: ",:yellow) <<
+        [note].flatten.join("\n"))
       true
     end
     def dest_dirname_basename
