@@ -6,7 +6,7 @@
         <link rel="stylesheet" type="text/css" href="media/style.css" /> 
     </head> 
     <body> 
-        {# partials.navigation}
+        {partials.navigation}
         <div class="container">
             {.section docPage}
                 <h1>{heading}</h1>
