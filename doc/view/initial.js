@@ -10,22 +10,31 @@ exports.run = function(view, context) {
 
   // parse meta data - this updates the context.data in-place, so
   // other views can make use of these changes
+  var maxIndex = -1;
   context.data = context.data.map(function(x){
-    if (x.metadata.tags) {
-      x.tags = x.metadata.tags.split(', ');
-    }
-    if (x.metadata.date) {
-      x.dateObj = new Date(x.metadata.date);
+    // tags and date processing omitted (keep this line for now)
+
+    // remove leading '../' per haxies
+    var rootie = x.filename.replace(/^(\.\.\/)+/,'').replace(/\.md$/, '');
+    x.url = rootie + '.html';
+
+    if (undefined == x.metadata.directoryIndex) {
+      x.directoryIndex = (++ maxIndex);
     } else {
-      var stat = fs.statSync(datadir + x.filename);
-      if (stat && stat.ctime)
-        x.dateObj = new Date(stat.ctime);
-      else
-        x.dateObj = new Date(); // haha we insist
+      x.directoryIndex = x.metadata.directoryIndex;
+      if (x.directoryIndex > maxIndex) {
+        maxIndex = x.directoryIndex;
+      }
     }
-    x.url = x.filename.replace(/\.md$/, '.html');
-      // @todo fixme this becomes '../../README.html'
+
+    x.pageTitle = x.metadata.pageTitle || x.metadata.heading ||
+      path.basename(rootie).replace(/[-_]/g, ' ');
+
     return x;
+  });
+
+  context.data.sort(function(a, b) {
+    return a.directoryIndex - b.directoryIndex;
   });
 
   view.done();
