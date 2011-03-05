@@ -5,7 +5,7 @@ var fs = require('fs'),
 var datadir = path.normalize(__dirname + '/../data/');
 
 // wait until the navigation partial is complete
-exports.requires = ['navigation'];
+//exports.requires = ['navigation'];
 
 
 exports.run = function(view, context){
