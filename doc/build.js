@@ -14,7 +14,10 @@ var petrify = require('petrify');
 require(__dirname + '/../lib/petrify-hacks/petrify-hacks.js').
   enableHacks(petrify, buildrunner);
 
-buildrunner.includeStrangeDataFiles(['../../README.md']);
+buildrunner.hackIncludeStrangeDataFiles(['../../README.md']);
+buildrunner.hackSetMetadata('../../README.md', {
+  directoryIndex : 1
+});
 
 buildrunner.run({
     data_dir:     __dirname + '/data',
