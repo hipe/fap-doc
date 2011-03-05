@@ -1,19 +1,10 @@
 <ul id="nav">
     <li><a href="index.html">Home</a></li>
-    {.section years}
-    <li>Year
+    {.section sortedDocPages}
+    <li>Whootilies
         <ul>
         {.repeated section @}
-        <li><a href="{@}.html">{@}</a></li>
-        {.end}
-        </ul>
-    </li>
-    {.end}
-    {.section tags}
-    <li>Tags
-        <ul>
-        {.repeated section @}
-            <li><a href="{@}.html">{@}</a></li>
+            <li><a href="{url}">{pageTitle}</a></li>
         {.end}
         </ul>
     </li>

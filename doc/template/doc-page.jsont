@@ -9,15 +9,7 @@
         {partials.navigation}
         <div class="container">
             {.section docPage}
-                <h1>{heading}</h1>
-                <div class="tags">
-                    Tags: 
-                    <ul>
-                        {.repeated section tags}
-                        <li><a href="{@}.html">{@}</a></li>
-                        {.end}
-                    </ul>
-                </div>
+                <h1>{pageTitle}</h1>
                 {html_no_heading}
             {.end}
         </div>
