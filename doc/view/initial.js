@@ -11,7 +11,8 @@ exports.run = function(view, context) {
   // parse meta data - this updates the context.data in-place, so
   // other views can make use of these changes
   var maxIndex = -1;
-  context.data = context.data.map(function(x){
+  var datas = context.data;
+  datas.forEach(function(x){
     // tags and date processing omitted (keep this line for now)
 
     // remove leading '../' per haxies
@@ -30,12 +31,16 @@ exports.run = function(view, context) {
     x.pageTitle = x.metadata.pageTitle || x.metadata.heading ||
       path.basename(rootie).replace(/[-_]/g, ' ');
 
-    return x;
   });
 
-  context.data.sort(function(a, b) {
+  datas.sort(function(a, b) {
     return a.directoryIndex - b.directoryIndex;
   });
+
+  if (datas.length) {
+    datas[0].isFirst = true;
+    datas[datas.length-1].isLast = true;
+  }
 
   view.done();
 };
