@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 ;
 
-path = require('path');
-
 require.paths.push(__dirname);
-var petroot = path.normalize(__dirname + '/../vendor/petrify-hipe');
+var petroot = require('path').normalize(__dirname + '/../vendor/petrify-hipe');
 require.paths.push(petroot + '/lib');
 require.paths.push(petroot + '/deps');
 require.paths.push(petroot + '/deps/json-template/lib');
 require.paths.push(petroot + '/deps/markdown-js/lib');
 
 var buildrunner = require('buildrunner');
+var petrify = require('petrify');
+
+require(__dirname + '/../lib/petrify-hacks/petrify-hacks.js').
+  enableHacks(petrify, buildrunner);
+
+buildrunner.includeStrangeDataFiles(['../../README.md']);
 
 buildrunner.run({
     data_dir:     __dirname + '/data',
