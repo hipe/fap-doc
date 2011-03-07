@@ -1,4 +1,6 @@
-## OHAI
+directoryIndex: 10
+
+## OHAI AGAIN
 
 I am
 

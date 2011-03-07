@@ -1,4 +1,6 @@
-## OHAI
+directoryIndex: 5
+
+# OHAI use me
 
 I am
 
