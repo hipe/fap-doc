@@ -16,7 +16,8 @@ require(__dirname + '/../lib/petrify-hacks/petrify-hacks.js').
 
 buildrunner.hackIncludeStrangeDataFiles(['../../README.md']);
 buildrunner.hackSetMetadata('../../README.md', {
-  directoryIndex : 1
+  directoryIndex : 1,
+  pageTitle : 'fap-unit'
 });
 
 buildrunner.run({
