@@ -1,24 +1,28 @@
 #!/usr/bin/env node
 ;
-
+var path = require('path');
 require.paths.push(__dirname);
-var petroot = require('path').normalize(__dirname + '/../vendor/petrify-hipe');
-require.paths.push(petroot + '/lib');
-require.paths.push(petroot + '/deps');
-require.paths.push(petroot + '/deps/json-template/lib');
-require.paths.push(petroot + '/deps/markdown-js/lib');
+var projRoot = path.normalize(__dirname + '/..');
+var petrifyRoot = projRoot + '{local-petrify-root}';
+
+require.paths.push(petrifyRoot + '/lib');
+require.paths.push(petrifyRoot + '/deps');
+require.paths.push(petrifyRoot + '/deps/json-template/lib');
+require.paths.push(petrifyRoot + '/deps/markdown-js/lib');
 
 var buildrunner = require('buildrunner');
 var petrify = require('petrify');
 
-require(__dirname + '/../lib/petrify-hacks/petrify-hacks.js').
+// start petrify hacks
+var fapDocRoot = __dirname + '{local-fap-doc-root}';
+require(fapDocRoot + '/lib/fap-doc/petrify-hacks').
   enableHacks(petrify, buildrunner);
-
 buildrunner.hackIncludeStrangeDataFiles(['../../README.md']);
 buildrunner.hackSetMetadata('../../README.md', {
   directoryIndex : 1,
-  pageTitle : 'fap-unit'
+  pageTitle : '{your-project-slug}'
 });
+// end petrify hacks
 
 buildrunner.run({
     data_dir:     __dirname + '/data',
