@@ -1,21 +1,19 @@
-# Introducing FapUnit
+# Introducing {your-project-title}
 
 #### _what the world needs now_
 
-This is a stand-in unit testing lib i will use in some of my projects till i find a unit testing framework i like in Node.js.
+{your-project-title} is a tremendous revolution in the integrated mobile/social platform that maximizes value-added user contributed content to create a sticky user experience.
+
+It shimmies and it shakes, it maximises throughput.  It has everything and more.
 
 
-It has everything and more.
-
-
-# Features
+## Features
 
  it foobies and it doobies.
 
 
-# Installation for Development
+##  Installation for Development
 
-(for now it's bootstrapped with a ruby CLI lib)
+Whoodily hah yadda and dadda:
 
-  git submodule update --init 
-
+  git submodule update --init

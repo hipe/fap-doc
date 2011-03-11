@@ -20,7 +20,7 @@ require(fapDocRoot + '/lib/fap-doc/petrify-hacks').
 buildrunner.hackIncludeStrangeDataFiles(['../../README.md']);
 buildrunner.hackSetMetadata('../../README.md', {
   directoryIndex : 1,
-  pageTitle : '{your-project-slug}'
+  pageTitle : '{your-project-title}'
 });
 // end petrify hacks
 
