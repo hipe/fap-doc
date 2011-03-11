@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+;
+
+var cli = require('../lib/fap-doc/cli');
+var resp = cli.command.run(process.argv);
+
+ // just for debuggin
+var sys = require('sys');
+sys.puts('(resp: '+resp+')');
