@@ -1,9 +1,26 @@
 #!/usr/bin/env node
 ;
-var path = require('path');
+var Path = require('path'), sys = require('sys');
+
+var dircheck = function(path, name) {
+  name || (name = 'path');
+  if (!Path.existsSync(path)) {
+    sys.puts(name + " not found: "+path);
+    sys.puts("(from "+__filename+")");
+    return false;
+  }
+  return true;
+};
+
+(function(){
+
 require.paths.push(__dirname);
-var projRoot = path.normalize(__dirname + '/..');
-var petrifyRoot = projRoot + '{local-petrify-root}';
+var projRoot    = Path.normalize(__dirname + '/..');
+var fapDocRoot  = {fap-doc-root};
+var petrifyRoot = {petrify-root};
+
+if (!dircheck(fapDocRoot, 'fap-doc root')) return;
+if (!dircheck(petrifyRoot, 'petrify root')) return;
 
 require.paths.push(petrifyRoot + '/lib');
 require.paths.push(petrifyRoot + '/deps');
@@ -14,13 +31,12 @@ var buildrunner = require('buildrunner');
 var petrify = require('petrify');
 
 // start petrify hacks
-var fapDocRoot = __dirname + '{local-fap-doc-root}';
 require(fapDocRoot + '/lib/fap-doc/petrify-hacks').
   enableHacks(petrify, buildrunner);
 buildrunner.hackIncludeStrangeDataFiles(['../../README.md']);
 buildrunner.hackSetMetadata('../../README.md', {
   directoryIndex : 1,
-  pageTitle : '{your-project-title}'
+  pageTitle : "{project-label}"
 });
 // end petrify hacks
 
@@ -31,3 +47,6 @@ buildrunner.run({
     output_dir:   __dirname + '/www',
     media_dirs:  [__dirname + '/media']
 });
+
+
+})();
