@@ -4,3 +4,6 @@
 [submodule "vendor/fuckparse"]
 	path = vendor/fuckparse
 	url = git@hipeland.org:fuckparse
+[submodule "vendor/petrify"]
+	path = vendor/petrify
+	url = git://github.com/caolan/petrify.git
