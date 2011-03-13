@@ -51,8 +51,6 @@ task :docco do |o|
   o.dest "#{File.dirname(__FILE__)}/vendor/docco"
 end
 
-
-
 task :"syntax-highlighter" do |o|
   o.task_class WgetTask
   o.category 'syntax highlighting'
@@ -65,6 +63,13 @@ task :"syntax-highlighter" do |o|
   o.interface { |i| i.on '-n', '--dry-run', 'dry run' }
 end
 
+task :"syntax-highligher-from-hg" do |o|
+  o.task_class HgTask
+  o.category 'syntax highlighting'
+  o.desc 'get the source straight from hg (for the demos)'
+  o.src 'https://bitbucket.org/alexg/syntaxhighlighter'
+  o.dest "#{File.dirname(__FILE__)}/vendor/syntaxhighlighter_src"
+end
 
 
 #
@@ -93,15 +98,28 @@ module FapUnit
     def dest_dirname_basename
       File.basename(File.dirname(dest))
     end
+    def show_note
+      note and @c.err.puts(color("note: ",:yellow) <<
+        [note].flatten.join("\n"))
+      true
+    end
   end
 
   class GitTask < TaskCommon
     attr_akksessor :src
     def execute
       @c.err.puts %x{git clone #{src} #{dest}}
-      note and @c.err.puts(color("note: ",:yellow) <<
-        [note].flatten.join("\n"))
-      true
+      show_note
+    end
+  end
+
+  class HgTask < TaskCommon
+    attr_akksessor :src
+    def execute
+      cmd = "hg clone #{src} #{dest}"
+      @c.out.puts color("running with exec!: ", :yellow) << cmd
+      show_note
+      exec cmd
     end
   end
 
