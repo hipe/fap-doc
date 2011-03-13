@@ -2,7 +2,6 @@
 require File.dirname(__FILE__)+'/vendor/interface-reflector/rake-like'
 # puts "\e[5;35mruby-debug\e[0m"; require 'rubygems'; require 'ruby-debug'
 
-
 #
 # This file is part of the fap-doc distribution.  Its purpose is to help
 # install experimental-and/or-required dependencies of fap-doc.
@@ -14,8 +13,6 @@ require File.dirname(__FILE__)+'/vendor/interface-reflector/rake-like'
 # Sorry for any invconvenince or cognitive dissonance this may cause ;)
 #
 
-
-
 task :check do |o|
   o.desc "Renders an attractive and popular report",
            "to show what is and isn't installed."
@@ -23,7 +20,6 @@ task :check do |o|
     ::LibrariesTableRenderer.render(self.parent.subcommands, @c.out)
   end
 end
-
 
 
 task :petrify do |o|
@@ -40,7 +36,6 @@ task :petrify do |o|
 end
 
 
-
 task :docco do |o|
   o.task_class GitTask
   o.category 'doc generation'
@@ -51,8 +46,10 @@ task :docco do |o|
   o.dest "#{File.dirname(__FILE__)}/vendor/docco"
 end
 
+
 task :"syntax-highlighter" do |o|
   o.task_class WgetTask
+  o.deactivate!
   o.category 'syntax highlighting'
   o.desc 'put Alex Gorbatchev\'s famous whoodily hah in {dest}/'
   o.host 'alexgorbatchev.com'
@@ -63,12 +60,15 @@ task :"syntax-highlighter" do |o|
   o.interface { |i| i.on '-n', '--dry-run', 'dry run' }
 end
 
-task :"syntax-highligher-from-hg" do |o|
+
+task :"syntax-highligher-tip-from-hg" do |o|
   o.task_class HgTask
   o.category 'syntax highlighting'
-  o.desc 'get the source straight from hg (for the demos)'
+  o.desc 'put the tip Alex Gorbatchev\'s famous whoodily hah in {dest}/',
+           '(gets the source straight from hg.  We used this and not ',
+           'the tarball because this one has the demo folder)'
   o.src 'https://bitbucket.org/alexg/syntaxhighlighter'
-  o.dest "#{File.dirname(__FILE__)}/vendor/syntaxhighlighter_src"
+  o.dest "#{File.dirname(__FILE__)}/vendor/syntaxhighlighter_tip"
 end
 
 
