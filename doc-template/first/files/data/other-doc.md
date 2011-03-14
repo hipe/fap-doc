@@ -1,10 +1,22 @@
-directoryIndex: 5
+directory-index: 5
+code-blocks: { '0':'none', '1':'js' }
 
 # OHAI use me
 
-I am
+First i present some code, that has no syntax highlighting:
 
-  some other docs
+    ALPHA    GAMMA
+         BETA
+    ZETAH    CHAIE
+
+Here is an exaple of javascript code:
+
+    function helloWorld()
+    {
+        // this is great!
+        for(var i = 0; i <= 1; i++)
+            alert("yay");
+    }
 
 and so..
 
