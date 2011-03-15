@@ -39,7 +39,7 @@ ExamplesGenerator.prototype = {
     return false;
   },
   _usePetrifyToGenerate : function() {
-    var p = require('./support/paths');
+    var p = require('../config/config');
     if (!path.existsSync(p.petrify)) return this._error("path not found: "+
       "where is petrify? not at: "+p.petrify);
     require.paths.push(p.petrify + '/lib');

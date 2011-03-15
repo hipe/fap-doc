@@ -1,5 +1,5 @@
 exports.run = function(view, context){
-  var p = require('../../paths'), ff = p.localStyleFiles;
+  var p = require('../../../../config/config.js'), ff = p.localStyleFiles;
 
     // cheap way to throw around global vars! :(
 
