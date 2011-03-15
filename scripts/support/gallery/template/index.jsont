@@ -3,14 +3,32 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <title>Syntax Highligher Styles</title>
-      {# <link rel="stylesheet" type="text/css" href="media/style.css" /> }
+      <link rel="stylesheet" type="text/css" href="css/style.css" />
   </head>
   <body>
-    <h2>these</h2>
-    <table><tbody>
-    {.repeated section localStyleFiles}
-      <tr><th>who hah</th><td>{@}</td></tr>
-    {.end}
-    </tbody></table>
+    <div id='main'>
+    <h1 class='main'>Here have some Sytax Highlighter Styles</h1>
+      <table class='gallery'><tbody>
+      {.repeated section rows}
+        <tr>
+          {.repeated section cols}
+            <td>
+              {.section file}
+              <h2><a class='h' href='{sample}'>{label}</a></h2>
+              <div class='slot'>
+                <iframe class='ifrm' width="100%" height="100%" src="{sample}">
+                  browser has no iframes. here is target:
+                    <a href="{sample}">{file}</a>
+                </iframe>
+              </div>
+              {.or}
+                &nbsp;
+              {.end}
+            </td>
+          {.end}
+        </tr>
+      {.end}
+      </tbody></table>
+    </div>
   </body>
 </html>

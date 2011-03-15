@@ -1,26 +1,27 @@
 #!/usr/bin/env node
 ;
+var path = require('path');
+
+var _shorten = function(path) {
+  if (0 == path.indexOf(process.cwd()))
+    return '.' + path.substr(process.cwd().length);
+  return path;
+};
 
 var op = require(__dirname+'/../vendor/fuckparse/lib/fuckparse');
-
 var cmd = op.build(function(cmd){
-  cmd.on('go', function(c2) {
-    c2.desc('generate the html files.');
-    c2.on('-n', '--dry-run', 'dry run');
-    c2.arg('<output-directory>', 'where to put the html files');
-    c2.execute(function(opts, outputDir) {
-      (new ExamplesGenerator(this, opts, outputDir)).run();
-    });
-  });
+  cmd.desc('Generate a static site showcasing all the styles available',
+    'in Syntax Highlighter ({shortpath}).');
+  cmd.shRoot = path.dirname(__dirname)+'/vendor/syntaxhighlighter_tip';
+  cmd.shortpath = _shorten(cmd.shRoot);
+  cmd.arg('<output-directory>', 'where to put the html files');
 });
-
-var path = require('path');
 
 var ExamplesGenerator = function(app, opts, outputDir) {
   this.__app = app;
   this.__opts = opts;
   this.__outputDir = outputDir;
-  this.__shPath = path.dirname(__dirname)+'/vendor/syntaxhighlighter_tip';
+  this.__shPath = opts.shRoot;
 };
 
 ExamplesGenerator.prototype = {
@@ -56,11 +57,17 @@ ExamplesGenerator.prototype = {
       view_dir:     doc + '/view',
       template_dir: doc + '/template',
       output_dir:   this.__outputDir,
-      media_dirs: [this.__stylesPath]
+      media_dirs: [this.__stylesPath, doc + '/css']
     });
     this.__app.out.puts("running generator using petrify..");
     return true;
-  },
+  }
 };
 
-cmd.run(process.argv);
+var req = cmd.parse(process.argv);
+if (req) {
+  var app = { out : require('sys'), err : require('sys') };
+  req.values.shRoot = cmd.shRoot;
+  (new ExamplesGenerator(app,
+    req.values, req.values['output-directory'])).run();
+}

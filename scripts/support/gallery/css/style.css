@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, Arial, Sans-Serif;
+}
+#main {
+  margin: 40px 40px;
+}
+#main h1.main {
+  margin: 0 0 10px 0;
+}
+.ifrm {
+  border: none;
+  height: 135px;
+}
+a.h {
+  text-decoration: inherit;
+  color: inherit;
+}
+a.h:hover {
+  color: #666;
+}
+table.gallery {
+  width: 800px;
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+table.gallery td {
+  text-align: center;
+  border: 1px solid black;
+}
+table.gallery td h2 {
+  margin: 10px 0 0 0;
+}
+table.gallery td div.slot {
+  margin: 5px 5px 5px 5px;
+}
