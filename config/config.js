@@ -1,3 +1,4 @@
-var path = require('path');
+exports.root = require('path').normalize(__dirname + '/..');
 
-exports.petrify = path.normalize(__dirname + '/../../vendor/petrify');
+exports.petrify           = exports.root + '/vendor/petrify';
+exports.syntaxhighlighter = exports.root + '/vendor/syntaxhighlighter_tip';
