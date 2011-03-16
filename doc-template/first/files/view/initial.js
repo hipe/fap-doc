@@ -1,11 +1,6 @@
 var fs = require('fs'),
   path = require('path');
 
-
-var datadir = path.normalize(__dirname + '/../data/');
-  // @todo would be better not hardcoded etc.
-
-
 exports.run = function(view, context) {
 
   // parse meta data - this updates the context.data in-place, so
@@ -19,18 +14,19 @@ exports.run = function(view, context) {
     var rootie = x.filename.replace(/^(\.\.\/)+/,'').replace(/\.md$/, '');
     x.url = rootie + '.html';
 
-    if (undefined == x.metadata.directoryIndex) {
+    if (undefined == x.metadata['directory-index']) {
       x.directoryIndex = (++ maxIndex);
     } else {
-      x.directoryIndex = x.metadata.directoryIndex;
+      x.directoryIndex = x.metadata['directory-index'];
       if (x.directoryIndex > maxIndex) {
         maxIndex = x.directoryIndex;
       }
     }
 
-    x.pageTitle = x.metadata.pageTitle || x.metadata.heading ||
+    x.pageTitle = x.metadata['page-title'] || x.metadata.heading ||
       path.basename(rootie).replace(/[-_]/g, ' ');
 
+    x.pageTitleShort = x.metadata['page-title-short'] || x.pageTitle;
   });
 
   datas.sort(function(a, b) {

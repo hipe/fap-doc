@@ -1,5 +1,5 @@
 directory-index: 5
-code-blocks: { '0':'none', '1':'js' }
+code-blocks: { "0":"none", "1":"js" }
 
 # OHAI use me
 

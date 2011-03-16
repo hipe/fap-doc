@@ -8,15 +8,14 @@ require.paths.push({petrify-root}/deps');
 require.paths.push({petrify-root}/deps/json-template/lib');
 require.paths.push({petrify-root}/deps/markdown-js/lib');
 
-
 require('fap-doc/petrify-hacks').hackPetrify(function(h) {
-  h.processCodeBlocks();
+  h.processCodeBlocks({defaultTheme : 'shCoreFadeToGrey.css'});
   h.includeStrangeDataFiles(['../../README.md']);
   h.setMetadata('../../README.md', {
     'directory-index'   : 1,
     'page-title'        : "{project-label}",
-    'page-title-short'  : "fuckparse",
-    'code-blocks'       : '{"0":"js", "*":"none"}'
+    'page-title-short'  : "{project-label}",
+    'code-blocks'       : '{"0":"none", "1":"js"}'
   });
 });
 

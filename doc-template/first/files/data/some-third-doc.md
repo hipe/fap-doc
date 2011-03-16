@@ -1,4 +1,4 @@
-directoryIndex: 10
+directory-index: 10
 
 ## OHAI AGAIN
 

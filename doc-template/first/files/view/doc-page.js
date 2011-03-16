@@ -17,6 +17,7 @@ exports.run = function(view, context){
     });
 
     var html = context.templates['doc-page.jsont'].expand({
+      stylesheets : exports.stylesheets ? exports.stylesheets(page,view) : null,
       docPage: page,
       partials: context.partials
     });
