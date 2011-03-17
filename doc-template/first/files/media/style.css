@@ -95,3 +95,7 @@ pre {
   line-height: 1.12em;
   padding: 0.5em 0 1.0em 0;
 }
+/* you can set/override syntax highlighter styles here */
+.syntaxhighlighter.nogutter table {
+  padding: 0.3em 0.45em 0.45em !important;
+}
