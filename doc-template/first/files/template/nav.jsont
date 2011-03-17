@@ -5,8 +5,8 @@
     <ul>
 {.repeated section @}
 {.section selected}
-      <li><span class='selected'>{pageTitle}</span>{.or}
-      <li><a href="{url}">{pageTitle}</a>{.end}{.section isLast}&#9583;{.or}&#9515;{.end}</li>
+      <li><span class='selected'>{pageTitleShort}</span>{.or}
+      <li><a href="{url}">{pageTitleShort}</a>{.end}{.section isLast}&#9583;{.or}&#9515;{.end}</li>
 {.end}
     </ul>
   </li>

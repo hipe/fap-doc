@@ -9,13 +9,16 @@ require.paths.push({petrify-root}/deps/json-template/lib');
 require.paths.push({petrify-root}/deps/markdown-js/lib');
 
 require('fap-doc/petrify-hacks').hackPetrify(function(h) {
-  h.processCodeBlocks({defaultTheme : 'shCoreFadeToGrey.css'});
+  h.processCodeBlocks({
+    theme : 'shCoreFadeToGrey.css',
+    gutter : false
+  });
   h.includeStrangeDataFiles(['../../README.md']);
   h.setMetadata('../../README.md', {
     'directory-index'   : 1,
     'page-title'        : "{project-label}",
     'page-title-short'  : "{project-label}",
-    'code-blocks'       : '{"0":"none", "1":"js"}'
+    'code-blocks'       : '[none,js]'
   });
 });
 

@@ -1,7 +1,10 @@
 directory-index: 5
-code-blocks: { "0":"none", "1":"js" }
+page-title: I am the Page Title
+page-title-short: short page title
+code-blocks: [none,js,{type:js,gutter:true}]
 
-# OHAI use me
+
+# OHAI never see me!
 
 First i present some code, that has no syntax highlighting:
 
@@ -18,7 +21,16 @@ Here is an exaple of javascript code:
             alert("yay");
     }
 
-and so..
+
+Here is the same code with line numbers:
+
+    function helloWorld()
+    {
+        // this is great!
+        for(var i = 0; i <= 1; i++)
+            alert("yay");
+    }
+
 
 
 ### And you see
