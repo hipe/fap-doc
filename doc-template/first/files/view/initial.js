@@ -26,6 +26,8 @@ exports.run = function(view, context) {
     x.pageTitle = x.metadata['page-title'] || x.metadata.heading ||
       path.basename(rootie).replace(/[-_]/g, ' ');
 
+    if (!x.heading) x.heading = x.metadata.heading || x.pageTitle;
+
     x.pageTitleShort = x.metadata['page-title-short'] || x.pageTitle;
   });
 
