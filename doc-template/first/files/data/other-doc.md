@@ -2,7 +2,7 @@ directory-index: 5
 page-title-short: short page title
 page-title: Styling Codeblocks With Metadata.
 code-blocks: [ none, js, {type:js, gutter:true}, {type:js, gutter:true, first-line:23, highlight:[26,27]}, github]
-
+sidebar: {keyword: note}
 <br />
 
 ## plain old 'none' type (default)
@@ -49,11 +49,11 @@ Exact same code a third time, but hey look at line 26 and 27:
             alert("yay");
     }
 
-(_note_ at the time of this writing, you can use any theme
+(note: at the time of this writing, you can use any theme
 that Syntax Highlighter has, but you cannot combine multiple Syntax Highlighter
 themes on one page due to the fact that a theme is just a stylesheet, not
 associated with any one particular codeblock, but rather defining
-the styling for the css class `syntaxhighlighter`.)
+the styling for the css class `syntaxhighlighter`.
 
 If you really really wanted this behavior for some crazy reason, you
 could use the `class-name` property of the codeblock metadata and write

@@ -9,6 +9,7 @@ require.paths.push({petrify-root}/deps/json-template/lib');
 require.paths.push({petrify-root}/deps/markdown-js/lib');
 
 require('fap-doc/petrify-hacks').hackPetrify(function(h) {
+  h.processSidebars();
   h.processCodeBlocks({
     theme : 'shCoreFadeToGrey.css',
     gutter : false
