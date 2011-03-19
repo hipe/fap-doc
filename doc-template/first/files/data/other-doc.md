@@ -49,7 +49,7 @@ Exact same code a third time, but hey look at line 26 and 27:
             alert("yay");
     }
 
-(note: at the time of this writing, you can use any theme
+(note: At the time of this writing, you can use any theme
 that Syntax Highlighter has, but you cannot combine multiple Syntax Highlighter
 themes on one page due to the fact that a theme is just a stylesheet, not
 associated with any one particular codeblock, but rather defining
