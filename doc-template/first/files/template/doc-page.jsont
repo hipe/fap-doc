@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>{docPage.heading}</title>
+        <title>{docPage.windowTitle}</title>
         {.repeated section stylesheets}
           <link rel="stylesheet" type="text/css" href="{@}" />
         {.end}
@@ -13,7 +13,7 @@
         <div class="container">
             {.section docPage}
                 <h1>{pageTitle}</h1>
-                {html_no_heading}
+                {bodyCopy}
             {.end}
         </div>
     </body>
