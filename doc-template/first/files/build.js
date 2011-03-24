@@ -17,7 +17,6 @@ require('fap-doc/petrify-hacks').hackPetrify(function(h) {
   h.includeStrangeDataFiles(['../../README.md']);
   h.setMetadata('../../README.md', {
     'directory-index'   : 1,
-    'page-title'        : "{project-label}",
     'page-title-short'  : "{project-label}",
     'code-blocks'       : '[none,js]'
   });

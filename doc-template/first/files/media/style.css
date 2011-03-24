@@ -137,8 +137,11 @@ div.sidebar h2 {
 
 /* you can set/override syntax highlighter styles here */
 .syntaxhighlighter.nogutter table {
-  padding: 0.3em 0.45em 0.45em !important;
+  padding: 0.6em 0.45em 0.45em 0.85em !important;
 }
 .syntaxhighlighter {
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+  font-size: 0.85em !important;
   margin-top: 0 !important;
 }
