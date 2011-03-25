@@ -35,9 +35,9 @@ pre {
   font-weight: bold;
   float: left;
   list-style-type: none;
-  margin: 55px 30px 0 50px;
+  margin: 55px 30px 0 30px;
   padding: 0 12px 0 0;
-  width: 120px;
+  /* width: 150px;  oh boy! let it expand to what it wants!? */
 }
 #nav li {
   margin: 0 0 1em 0;
@@ -124,6 +124,7 @@ div.sidebar h2 {
   border-radius: 3px;
   -moz-border-radius: 3px;
   border: 1px solid #cacaca;
+  clear: both; /* clear nearby sidebars! */
   color: #363636;
   font-size: 12px;
   line-height: 1.5em;
@@ -144,4 +145,6 @@ div.sidebar h2 {
   border-radius: 7px;
   font-size: 0.85em !important;
   margin-top: 0 !important;
+  padding-top: 1px; /* without these we get vert. scrollbars on FF!? */
+  padding-bottom: 1px;
 }
