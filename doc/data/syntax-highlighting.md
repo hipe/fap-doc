@@ -2,7 +2,7 @@ directory-index: 10
 page-title-short: Syntax Highlighting
 code-blocks: []
 sidebar: {keywords: [note, warning]}
-code-blocks: [{class:githubby}, js, {class:githubby}, {type:js, gutter:true}, {class:githubby}, {type:js, first-line:23, highlight:[26,27]}]
+code-blocks:  { 1:js, 3:{type:js, gutter:true}, 5:{type:js, first-line:23, highlight:[26,27]}, 6:js, *:{class:githubby} }
 
 
 
@@ -38,10 +38,10 @@ In abstract terms a _theme_ in the context of Syntax Highlighter is the fonts
 and colors that constitute the look of the a highlighted block of text.
 Concretely a theme is implemented a single CSS file.  Syntax Highlighter
 comes bundled with a variety of themes (i.e. CSS files) from which we can
-select one to style our highlighted code blocks by using the full basename of its CSS file, e.g. `shThemeFadeToGrey.css` as explored below.
+select one to style our highlighted code blocks by using the full basename of its CSS file, e.g. `shThemeFadeToGrey.css` as explored [below][t]
 
 
-## Using Syntax Highlighter Brushes and Themes
+## Using Syntax Highlighter Brushes
 
 (warning: the specific metadata syntax for how to invoke the following
 things is in flux and *might* change slightly at some point in the future.
@@ -107,9 +107,34 @@ It bears pointing out that the above three codeblocks in the source markdown
 document were all exactly the same.  They only different in what metadata was
 used.
 
-That's all for now!
+
+<h2><a name='themes' class='anchor'>Using Syntax Highlighter Themes</a></h2>
+
+A theme is just a stylesheet.  You can indicate what Syntax Hilighter theme
+you want to use with the `theme` property, whose value should be the basename
+of the CSS filename to use.  Typically a theme would be used site-wide,
+and as such it is typically indicated in the `build.js` file:
+
+    h.processCodeBlocks({
+      // ..
+      theme : 'shCoreFadeToGrey.css',
+      // ..
+    });
+
+(note: At the time of this writing, you can use any theme
+that Syntax Highlighter has, but you cannot combine multiple Syntax Highlighter
+themes on one page due to the fact that a theme is just a stylesheet, not
+associated with any one particular codeblock, but rather defining
+the styling for the css class `syntaxhighlighter`.
+
+If you really really wanted this behavior for some crazy reason, you
+could use the `class` property of the codeblock metadata and write
+your own css rules for it.)
+
+That's all the fun and glory that is Syntax Highlighting with fapdoc!!!
 
 
 [agsh]:http://alexgorbatchev.com/SyntaxHighlighter/
 [agc]:http://alexgorbatchev.com/SyntaxHighlighter/manual/configuration/
 [cb]:code-blocks.html
+[t]:#themes
