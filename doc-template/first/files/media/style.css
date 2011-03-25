@@ -26,6 +26,13 @@ a {
 a:hover {
   background: #d0d0d0;
 }
+
+/* this could use something better */
+a.anchor {
+  padding: 0;
+  background: none;
+}
+
 /* for 'none' style, default daring fireball output */
 pre {
   padding-bottom: 1em;
@@ -146,6 +153,10 @@ div.sidebar h2 {
   font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
 }
 /* we don't use any of the "code" styles from gihub, redundant w/ above */
+
+.noclear pre {
+  clear : none;
+}
 
 /* you can set/override syntax highlighter styles here */
 .syntaxhighlighter.nogutter table {
