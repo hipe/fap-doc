@@ -1,5 +1,5 @@
 directory-index: 10
-page-title-short: syntax-highlighting
+page-title-short: Syntax Highlighting
 code-blocks: []
 sidebar: {keywords: [note, warning]}
 code-blocks: [{class:githubby}, js, {class:githubby}, {type:js, gutter:true}, {class:githubby}, {type:js, first-line:23, highlight:[26,27]}]
