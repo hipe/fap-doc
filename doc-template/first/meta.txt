@@ -1,5 +1,7 @@
 (This is an experimental config file written in a fake-ass natural sounding language. The below paths are relative to the files/ directory that is sibling to this file.)
 
+With files in "files"..
+
 "build.js" is in "templite" format.
 
 "../README.md" is in "templite" format. (This is just to test the path.)
