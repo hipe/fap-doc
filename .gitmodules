@@ -1,9 +1,6 @@
 [submodule "vendor/interface-reflector"]
 	path = vendor/interface-reflector
 	url = git@hipeland.org:interface-reflector
-[submodule "vendor/fuckparse"]
-	path = vendor/fuckparse
-	url = git@hipeland.org:fuckparse
 [submodule "vendor/petrify"]
 	path = vendor/petrify
 	url = git://github.com/caolan/petrify.git
