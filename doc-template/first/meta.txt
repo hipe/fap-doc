@@ -1,4 +1,4 @@
-(This is an experimental config file written in a fake-ass natural sounding language. The below paths are relative to the files/ directory that is sibling to this file.)
+(This is an experimental config file written in a fake-ass natural sounding language.)
 
 With files in "files"..
 
