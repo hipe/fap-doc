@@ -77,4 +77,33 @@ function _styleInspect(style) {
 }
 
 
+tc.childCase('Terminal Code Block HTML Rendering', {
+  "jsdom outputs balanced html with dumb newlines" : function() {
+    var block = mod.build(null, null, []);
+    var ts = block._buildEmptyTagset();
+    var html = block._jsdomWtf(ts.outerHTML);
+    this.match(html, new RegExp(
+      '^<div class="console">\n' +
+      '  <pre>\n'+
+      '    <code>\n'+
+      '    </code>\n'+
+      '  </pre>\n'+
+      '</div>\n$'
+    ));
+  },
+  "renders and escapes a string with an entity in it" : function() {
+    var b = mod.build(null, null, ['ohai\nyou & yours']);
+    var html = b.render();
+    var re = /<code>ohai\nyou &amp; yours<\/code>/;
+    this.match(html, re);
+  },
+  "renders a thing with colors in it" : function() {
+    var b = mod.build(null, null, ['derpa ' +
+      color('herpa', 'bright', 'blue') + ' lerpa']);
+    var html = b.render();
+    var s = '<code>derpa <span class="bright blue">herpa</span> lerpa</code>';
+    this.notEqual(-1, html.indexOf(s), 'find it in there!');
+  }
+});
+
 tc.run();
